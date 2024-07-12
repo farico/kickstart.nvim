@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -168,6 +168,10 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+-- Buffer navigation keymaps
+vim.keymap.set('n', ']b', '<cmd>bnext<cr>')
+vim.keymap.set('n', '[b', '<cmd>bprev<cr>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -257,6 +261,58 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      on_attach = function(bufnr)
+        local gitsigns = require 'gitsigns'
+
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        map('n', ']c', function()
+          if vim.wo.diff then
+            vim.cmd.normal { ']c', bang = true }
+          else
+            gitsigns.nav_hunk 'next'
+          end
+        end)
+
+        map('n', '[c', function()
+          if vim.wo.diff then
+            vim.cmd.normal { '[c', bang = true }
+          else
+            gitsigns.nav_hunk 'prev'
+          end
+        end)
+
+        -- Actions
+        map('n', '<leader>hs', gitsigns.stage_hunk)
+        map('n', '<leader>hr', gitsigns.reset_hunk)
+        map('v', '<leader>hs', function()
+          gitsigns.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end)
+        map('v', '<leader>hr', function()
+          gitsigns.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end)
+        map('n', '<leader>hS', gitsigns.stage_buffer)
+        map('n', '<leader>hu', gitsigns.undo_stage_hunk)
+        map('n', '<leader>hR', gitsigns.reset_buffer)
+        map('n', '<leader>hp', gitsigns.preview_hunk)
+        map('n', '<leader>hb', function()
+          gitsigns.blame_line { full = true }
+        end)
+        map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+        map('n', '<leader>hd', gitsigns.diffthis)
+        map('n', '<leader>hD', function()
+          gitsigns.diffthis '~'
+        end)
+        map('n', '<leader>td', gitsigns.toggle_deleted)
+
+        -- Text object
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      end,
     },
   },
 
@@ -423,7 +479,7 @@ require('lazy').setup({
     },
     config = function()
       require('nvim-tree').setup {
-        vim.keymap.set('n', '<leader>e', ':NvimTreeToggle', { desc = 'Toggl[e] Tree' }),
+        vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeFindFileToggle<cr>', { desc = 'Toggl[e] Tree' }),
       }
     end,
   },
@@ -753,7 +809,7 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
+          -- ['<CR>'] = cmp.mapping.confirm { select = true },
           --['<Tab>'] = cmp.mapping.select_next_item(),
           --['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
@@ -793,7 +849,16 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    init = function()
+      vim.cmd.colorscheme 'catppuccin-mocha'
+    end,
+  },
+
+  --[[{ -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
     --
@@ -808,7 +873,8 @@ require('lazy').setup({
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
-  },
+  },]]
+  --
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -982,11 +1048,11 @@ require('lazy').setup({
         -- buffer diagnostics only
         map('n', '<leader>d', vim.diagnostic.setloclist)
 
-        map('n', '[c', function()
+        map('n', '[d', function()
           vim.diagnostic.goto_prev { wrap = false }
         end)
 
-        map('n', ']c', function()
+        map('n', ']d', function()
           vim.diagnostic.goto_next { wrap = false }
         end)
 
@@ -1035,13 +1101,26 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'akinsho/bufferline.nvim',
+    version = '*',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      require('bufferline').setup()
+    end,
+  },
+
+  {
+    'github/copilot.vim',
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
-  --  Here are some example plugins that I've included in the Kickstart repository.
+  --  Here are some example pgithub/copilot.vimlugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
