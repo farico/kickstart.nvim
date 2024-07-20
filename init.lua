@@ -161,13 +161,22 @@ vim.opt.scrolloff = 10
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
+vim.opt.incsearch = true
+-- vim.opt.colorcolumn = '80'
+
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+-- vim.keymap.set('n', '<C-j>', '<cmd>cnext<CR>', { desc = 'Go to [n]ext item in Quickfix list' })
+-- vim.keymap.set('n', '<C-k>', '<cmd>cprev<CR>', { desc = 'Go to [p]revious item in Quickfix list' })
+
+vim.keymap.set('n', ']f', '<cmd>cnext<CR>', { desc = 'Go to [n]ext item in Quickfix list' })
+vim.keymap.set('n', '[f', '<cmd>cprev<CR>', { desc = 'Go to [p]revious item in Quickfix list' })
 
 -- Buffer navigation keymaps
 vim.keymap.set('n', ']b', '<cmd>bnext<cr>')
@@ -407,15 +416,19 @@ require('lazy').setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
+      local actions = require 'telescope.actions'
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = {
+              -- sends to quickfix list and opens it. Use Meta-Q for sending selection
+              ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
+            },
+          },
+        },
         pickers = {
           colorscheme = {
             enable_preview = true,
@@ -437,6 +450,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sa', function()
+        builtin.find_files { hidden = true, no_ignore = true }
+      end, { desc = '[S]earch [A]ll Files' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -484,6 +500,10 @@ require('lazy').setup({
         },
         renderer = {
           group_empty = true,
+        },
+        filters = {
+          dotfiles = false,
+          git_ignored = false,
         },
       }
       vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeFindFileToggle<cr>', { desc = 'Toggl[e] Tree' })
@@ -854,34 +874,22 @@ require('lazy').setup({
       }
     end,
   },
-
   {
-    'catppuccin/nvim',
-    name = 'catppuccin',
-    priority = 1000,
-    init = function()
-      vim.cmd.colorscheme 'catppuccin-mocha'
+    'mbbill/undotree',
+    config = function()
+      vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle [U]ndo Tree' })
     end,
   },
+  {
+    'projekt0n/github-nvim-theme',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('github-theme').setup()
 
-  --[[{ -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- vim.cmd.colorscheme 'habamax'
-      -- vim.cmd.colorscheme 'catppuccin-latte'
-      vim.cmd.colorscheme 'mellifluous'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+      vim.cmd 'colorscheme github_light'
     end,
-  },]]
-  --
-
+  },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -999,7 +1007,7 @@ require('lazy').setup({
       -- Example of settings
       metals_config.settings = {
         showImplicitArguments = true,
-        excludedPackages = { 'akka.actor.typed.javadsl', 'com.github.swagger.akka.javadsl' },
+        --      excludedPackages = { 'akka.actor.typed.javadsl', 'com.github.swagger.akka.javadsl' },
       }
 
       -- *READ THIS*
