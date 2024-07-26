@@ -517,7 +517,7 @@ require('lazy').setup({
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
+      'scalameta/nvim-metals',
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
@@ -890,6 +890,14 @@ require('lazy').setup({
       vim.cmd 'colorscheme github_light'
     end,
   },
+
+  { 'olimorris/onedarkpro.nvim' },
+  { 'rose-pine/neovim', name = 'rose-pine' },
+  { 'sainnhe/edge' },
+  { 'EdenEast/nightfox.nvim' }, -- lazy
+  { 'MetriC-DT/balance-theme.nvim' },
+  { 'zenbones-theme/zenbones.nvim', dependencies = { 'rktjmp/lush.nvim' } },
+
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
