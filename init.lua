@@ -1,4 +1,4 @@
---[[
+--[[q
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -1025,12 +1025,17 @@ require('lazy').setup({
       metals_config.capabilities = require('cmp_nvim_lsp').default_capabilities()
 
       metals_config.on_attach = function(client, bufnr)
+        vim.lsp.buf.document_highlight()
+        vim.lsp.buf.clear_references()
+        vim.lsp.codelens.refresh()
+
         require('metals').setup_dap()
 
         local map = vim.keymap.set
 
         -- LSP mappings
         map('n', 'gD', vim.lsp.buf.definition)
+        map('n', 'gf', vim.lsp.buf.definition)
         map('n', 'K', vim.lsp.buf.hover)
         map('n', 'gi', vim.lsp.buf.implementation)
         map('n', 'gr', vim.lsp.buf.references)
@@ -1041,6 +1046,9 @@ require('lazy').setup({
         map('n', '<leader>rn', vim.lsp.buf.rename)
         map('n', '<leader>f', vim.lsp.buf.format)
         map('n', '<leader>ca', vim.lsp.buf.code_action)
+        map('n', '<leader>m', function()
+          require('telescope').extensions.metals.commands()
+        end)
 
         map('n', '<leader>ws', function()
           require('metals').hover_worksheet()
@@ -1144,6 +1152,18 @@ require('lazy').setup({
 
   {
     'github/copilot.vim',
+  },
+
+  {
+    'hedyhli/outline.nvim',
+    config = function()
+      -- Example mapping to toggle outline
+      vim.keymap.set('n', '<leader>o', '<cmd>Outline<CR>', { desc = 'Toggle Outline' })
+
+      require('outline').setup {
+        -- Your setup opts here (leave empty to use defaults)
+      }
+    end,
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
