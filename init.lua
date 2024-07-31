@@ -178,6 +178,9 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', ']f', '<cmd>cnext<CR>', { desc = 'Go to [n]ext item in Quickfix list' })
 vim.keymap.set('n', '[f', '<cmd>cprev<CR>', { desc = 'Go to [p]revious item in Quickfix list' })
 
+vim.keymap.set('n', ']q', '<cmd>cnewer<CR>', { desc = 'Go to [n]ext Quickfix list' })
+vim.keymap.set('n', '[q', '<cmd>colder<CR>', { desc = 'Go to [p]revious Quickfix list' })
+
 -- Buffer navigation keymaps
 vim.keymap.set('n', ']b', '<cmd>bnext<cr>')
 vim.keymap.set('n', '[b', '<cmd>bprev<cr>')
@@ -452,6 +455,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>su', builtin.git_status, { desc = '[S]earch Git stat[u]s' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -883,10 +887,11 @@ require('lazy').setup({
     config = function()
       require('github-theme').setup()
 
-      vim.cmd 'colorscheme github_light'
+      -- vim.cmd 'colorscheme github_light'
+      vim.cmd 'colorscheme nightfox'
     end,
   },
-
+  { 'fneu/breezy' },
   { 'olimorris/onedarkpro.nvim' },
   { 'rose-pine/neovim', name = 'rose-pine' },
   { 'sainnhe/edge' },
