@@ -502,8 +502,8 @@ require('lazy').setup({
           group_empty = true,
         },
         filters = {
-          dotfiles = false,
-          git_ignored = false,
+          -- dotfiles = false,
+          -- git_ignored = false,
         },
       }
       vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeFindFileToggle<cr>', { desc = 'Toggl[e] Tree' })
