@@ -880,6 +880,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle [U]ndo Tree' })
     end,
   },
+  -- lazy.nvim
+  {
+    'm4xshen/hardtime.nvim',
+    dependencies = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
+    opts = {},
+  },
   {
     'projekt0n/github-nvim-theme',
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -888,14 +894,43 @@ require('lazy').setup({
       require('github-theme').setup()
 
       -- vim.cmd 'colorscheme github_light'
-      vim.cmd 'colorscheme nightfox'
+      -- vim.cmd 'colorscheme nightfox'
     end,
+  },
+  -- Using lazy.nvim
+  {
+    'ribru17/bamboo.nvim',
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require('bamboo').setup {
+        -- optional configuration here
+      }
+      require('bamboo').load()
+
+      -- vim.cmd 'colorscheme bamboo'
+    end,
+  },
+  {
+    'scottmckendry/cyberdream.nvim',
+    lazy = false,
+    priority = 1000,
   },
   { 'fneu/breezy' },
   { 'olimorris/onedarkpro.nvim' },
   { 'rose-pine/neovim', name = 'rose-pine' },
   { 'sainnhe/edge' },
-  { 'EdenEast/nightfox.nvim' }, -- lazy
+  {
+    'EdenEast/nightfox.nvim',
+    config = function()
+      require('nightfox').setup {
+        options = {
+          transparent = true,
+        },
+      }
+      vim.cmd 'colorscheme nightfox'
+    end,
+  }, -- lazy
   { 'MetriC-DT/balance-theme.nvim' },
   { 'zenbones-theme/zenbones.nvim', dependencies = { 'rktjmp/lush.nvim' } },
 
