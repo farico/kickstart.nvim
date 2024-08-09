@@ -931,6 +931,14 @@ require('lazy').setup({
       vim.cmd 'colorscheme nightfox'
     end,
   }, -- lazy
+  {
+    'rebelot/kanagawa.nvim',
+    config = function()
+      require('kanagawa').setup {
+        transparent = true,
+      }
+    end,
+  },
   { 'MetriC-DT/balance-theme.nvim' },
   { 'zenbones-theme/zenbones.nvim', dependencies = { 'rktjmp/lush.nvim' } },
 
