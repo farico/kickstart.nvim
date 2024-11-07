@@ -673,7 +673,15 @@ require('lazy').setup({
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
-        rust_analyzer = {},
+        rust_analyzer = {
+          settings = {
+            ['rust-analyzer'] = {
+              checkOnSave = {
+                command = 'clippy',
+              },
+            },
+          },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -931,7 +939,8 @@ require('lazy').setup({
           transparent = true,
         },
       }
-      vim.cmd 'colorscheme nightfox'
+      -- vim.cmd 'colorscheme nightfox'
+      vim.cmd 'colorscheme duskfox'
     end,
   }, -- lazy
   {
@@ -944,7 +953,7 @@ require('lazy').setup({
   },
   { 'MetriC-DT/balance-theme.nvim' },
   { 'zenbones-theme/zenbones.nvim', dependencies = { 'rktjmp/lush.nvim' } },
-
+  { 'NLKNguyen/papercolor-theme' },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -1177,7 +1186,27 @@ require('lazy').setup({
       })
     end,
   },
+  {
+    'rcarriga/nvim-dap-ui',
+    dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' },
+    config = function()
+      local dap, dapui = require 'dap', require 'dapui'
+      dapui.setup()
 
+      dap.listeners.before.attach.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.launch.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated.dapui_config = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited.dapui_config = function()
+        dapui.close()
+      end
+    end,
+  },
   {
     'christoomey/vim-tmux-navigator',
     cmd = {
